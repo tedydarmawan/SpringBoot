@@ -1,0 +1,78 @@
+## Membuat Projek Maven
+
+Langkah-langkah membuat projek maven:
+1. Klik File > New > Maven Project
+2. Centang "Create a simple project (skip archetype selection)"
+3. Isi Group Id: "com.mayora.web"
+4. Isi Artifact Id: "sample-project".
+   
+   Semua projek Maven memiliki Group Id dan Artifact Id.  Group Id + Artifact Id = Nama Projek.
+5. Biarkan Version: "0.0.1-SNAPSHOT" dan packaging: "jar". 
+   
+   SNAPSHOT menunjukkan bahwa projek sedang dalam fase development.
+6. Klik Finish
+
+#### Struktur Projek
+src/main/java = source code java
+
+src/test/java = source code junit java
+
+#### Dependency
+Semua eksternal jar/library yang berhubungan dengan projek
+
+#### Cara manual mengatur dependency
+Download jar secara manual dan letakkan di dalam projek
+
+#### Maven
+Build tool yang dapat digunakan untuk mengatur dependency (dependency management) dengan cara mendownload jar yang berhubungan dengan projek secara otomatis.
+
+pom.xml = Project Object Model, File konfigurasi untuk projek Maven, yang medefinisikan semua dependency (eksternal jar/library) yang terkait dengan projek.
+``` java
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.mayora.web</groupId>
+  <artifactId>sample-project</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+</project>
+```
+
+## Menambahkan Dependency ke Maven
+Cari dependency yang akan ditambahkan di Maven repository, misal spring-core:
+``` java
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-core</artifactId>
+    <version>4.3.8.RELEASE</version>
+</dependency>
+```
+
+Tambahkan dependency tersebut ke dalam pom.xml
+``` java
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.mayora.web</groupId>
+  <artifactId>sample-project</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  
+  <dependencies>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-core</artifactId>
+      <version>4.3.8.RELEASE</version>
+    </dependency>
+    
+  </dependencies>
+</project>
+```
+ Maven akan mendownload dan meletakkan spring-core di CLASSPATH sehingga dependency tersebut dapat digunakan didalam projek. Dapat dilihat pada "Maven Dependencies" di Project Explorer, semua file jar yang terdownload akan muncul disana.
+ 
+ #### Transitive Dependency
+ Dependency dari suatu dependency (Transitive dependency). Jika suatu dependency (A) bergantung pada dependency (B) lain maka dependency (B) akan terdownload juga secara otomatis.
+
+ 5 Langkah Membuat Projek Spring Boot
+ 1. Spring Boot Starter Parent
+ 2. Spring Boot Starter Web
+ 3. Java Version 8
+ 4. Spring Boot Plugin
+ 5. Buat Launcher untuk Spring Boot Application
