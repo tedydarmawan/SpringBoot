@@ -1,6 +1,6 @@
 ## Membuat Projek Maven
 
-Langkah-langkah membuat projek maven:
+Langkah-langkah membuat projek maven di Eclipse atau Spring Tool Suite (STS):
 1. Klik File > New > Maven Project
 2. Centang "Create a simple project (skip archetype selection)"
 3. Isi Group Id: "com.mayora.web"
@@ -70,9 +70,60 @@ Tambahkan dependency tersebut ke dalam pom.xml
  #### Transitive Dependency
  Dependency dari suatu dependency (Transitive dependency). Jika suatu dependency (A) bergantung pada dependency (B) lain maka dependency (B) akan terdownload juga secara otomatis.
 
- 5 Langkah Membuat Projek Spring Boot
- 1. Spring Boot Starter Parent
- 2. Spring Boot Starter Web
+ #### 5 Langkah Membuat Projek Spring Boot
+ 1. Tambahkan Spring Boot Starter Parent dependency
+    Spring Boot Starter Parent akan mengurus versi dari semua dependency Spring.
+    ``` xml
+    <parent>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-parent</artifactId>
+      <version>1.5.3.RELEASE</version>
+    </parent>
+    ```
+    
+ 2. Tambahkan Spring Boot Starter Web dependency
+    Spring Boot Starter Web akan mengurus semua dependency Spring untuk pengembangan aplikasi web.
+    ``` xml
+    <dependencies>
+      <dependency>
+         <groupId>org.springframework.boot</groupId>
+         <artifactId>spring-boot-starter-web</artifactId>
+      </dependency>
+    </dependencies>
+    ```
+    
  3. Java Version 8
- 4. Spring Boot Plugin
+    ``` xml
+    <properties>
+  	   <java.version>1.8</java.version>
+    </properties>
+    ```
+    
+ 4. Tambahkan Spring Boot Maven Plugin
+    Spring Boot Maven Plugin digunakan untuk membuat aplikasi jar/war dan menjalankan aplikasi Spring Boot.
+    ``` xml
+    <build>
+      <plugins>
+         <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+         </plugin>
+      </plugins>
+    </build>
+    ```
+    
  5. Buat Launcher untuk Spring Boot Application
+    ``` java
+    import org.springframework.boot.SpringApplication;
+    import org.springframework.boot.autoconfigure.SpringBootApplication;
+    import org.springframework.context.ApplicationContext;
+
+    @SpringBootApplication
+    public class Application {
+      
+      public static void main(String[] args){
+		   ApplicationContext ctx = SpringApplication.run(Application.class, args);
+	   }
+      
+    }
+    ```
