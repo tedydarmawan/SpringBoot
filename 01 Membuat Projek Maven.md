@@ -70,7 +70,7 @@ Tambahkan dependency tersebut ke dalam pom.xml
  #### Transitive Dependency
  Dependency dari suatu dependency (Transitive dependency). Jika suatu dependency (A) bergantung pada dependency (B) lain maka dependency (B) akan terdownload juga secara otomatis.
 
- #### 5 Langkah Membuat Projek Spring Boot
+ ## 5 Langkah Membuat Projek Spring Boot
  1. Tambahkan Spring Boot Starter Parent dependency
     Spring Boot Starter Parent akan mengurus versi dari semua dependency Spring.
     ``` xml
@@ -92,7 +92,7 @@ Tambahkan dependency tersebut ke dalam pom.xml
     </dependencies>
     ```
     
- 3. Java Version 8
+ 3. Override Java Version 8
     ``` xml
     <properties>
   	   <java.version>1.8</java.version>
@@ -113,6 +113,7 @@ Tambahkan dependency tersebut ke dalam pom.xml
     ```
     
  5. Buat Launcher untuk Spring Boot Application
+    #### Application.java
     ``` java
     import org.springframework.boot.SpringApplication;
     import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -127,3 +128,40 @@ Tambahkan dependency tersebut ke dalam pom.xml
       
     }
     ```
+
+## pom.xml Lengkap
+``` xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.project.web</groupId>
+  <artifactId>sample-project</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  
+  <properties>
+  	<java.version>1.8</java.version>
+  </properties> 
+  
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>1.5.3.RELEASE</version>
+  </parent>
+  
+  <dependencies>
+    <dependency>
+	  <groupId>org.springframework.boot</groupId>
+	  <artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
+  </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+  
+</project>
+```
