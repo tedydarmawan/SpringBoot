@@ -113,6 +113,7 @@ Tambahkan dependency tersebut ke dalam pom.xml
     ```
     
  5. Buat Launcher untuk Spring Boot Application
+    
     @SpringBootApplication sama dengan mendeklarasikan @Configuration, @EnableAutoConfiguration, @ComponentScan secara bersamaan dengan default atribut
  
     #### Application.java
