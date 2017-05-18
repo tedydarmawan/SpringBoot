@@ -72,7 +72,7 @@ Tambahkan dependency tersebut ke dalam pom.xml
 
  ## 5 Langkah Membuat Projek Spring Boot
  1. Tambahkan Spring Boot Starter Parent dependency
-    Spring Boot Starter Parent akan mengurus versi dari semua dependency Spring.
+    Spring Boot Starter Parent akan menangani versi dari semua dependency Spring, java version dan default plugin. Sehingga dapat memastikan bahwa semua dependency dapat bekerja satu sama lain (compatibility).
     ``` xml
     <parent>
       <groupId>org.springframework.boot</groupId>
@@ -80,9 +80,9 @@ Tambahkan dependency tersebut ke dalam pom.xml
       <version>1.5.3.RELEASE</version>
     </parent>
     ```
-    
+      
  2. Tambahkan Spring Boot Starter Web dependency
-    Spring Boot Starter Web akan mengurus semua dependency Spring untuk pengembangan aplikasi web.
+    Spring Boot Starter Web akan menangani semua dependency Spring untuk pengembangan aplikasi web termasuk embedded tomcat yang digunakan sebagai web server.
     ``` xml
     <dependencies>
       <dependency>
@@ -100,7 +100,7 @@ Tambahkan dependency tersebut ke dalam pom.xml
     ```
     
  4. Tambahkan Spring Boot Maven Plugin
-    Spring Boot Maven Plugin digunakan untuk membuat aplikasi jar/war dan menjalankan aplikasi Spring Boot.
+    Spring Boot Maven Plugin digunakan untuk membuat aplikasi jar/war dan menjalankan aplikasi Spring Boot secara independen
     ``` xml
     <build>
       <plugins>
@@ -114,7 +114,7 @@ Tambahkan dependency tersebut ke dalam pom.xml
     
  5. Buat Launcher untuk Spring Boot Application
     
-    @SpringBootApplication sama dengan mendeklarasikan @Configuration, @EnableAutoConfiguration, @ComponentScan secara bersamaan dengan default atribut
+    @SpringBootApplication sama dengan mendeklarasikan @Configuration, @EnableAutoConfiguration, @ComponentScan secara bersamaan dengan default atribut dari masing-masing anotasi.
  
     #### Application.java
     ``` java
