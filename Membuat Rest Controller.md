@@ -1,5 +1,14 @@
 ## Membuat Rest Controller
 
+@GetMapping
+@PathVariable
+
+@RequestParam
+
+JSONView Chrome
+
+
+
 #### WelcomeController.java
 ``` java
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,4 +45,15 @@ Spring bisa menggunakan konfigurasi eksternal dengan menggunakan application.pro
 #### /src/main/resources/application.properties
 ``` java
 logging.level.org.springframework: DEBUG
+```
+
+## Spring Developer Tools
+Pada saat proses pengembangan aplikasi, setiap kali ada perubahan kode maka aplikasi Spring Boot yang sedang berjalan harus dihentikan terlebih dahulu kemudian dijalankan kembali secara manual (restart manual). Dengan adanya Spring Developer Tools dapat membantu developer untuk mempersingkat proses restart manual tadi sehingga ketika ada perubahan kode aplikasi Spring Boot otomatis akan melakukan restart agar perubahan kode tersebut masuk ke dalam aplikasi yang sedang berjalan. Untuk itu maka diperlukan untuk menambahkan dependency Spring Developer Tools ke dalam projek Java.
+
+``` xml
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-devtools</artifactId>
+  <optional>true</optional>
+</dependency>
 ```
