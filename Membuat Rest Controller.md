@@ -9,12 +9,15 @@ JSONView Chrome
 
 
 
-#### WelcomeController.java
+## com/mayora/controller/WelcomeController.java
 ``` java
+package com.mayora.controller;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.mayora.service.WelcomeService;
 
 @RestController
 public class WelcomeController {
@@ -29,14 +32,364 @@ public class WelcomeController {
 	}
 	
 }
+```
+
+## com/mayora/controller/SurveyController.java
+``` java
+package com.mayora.controller;
+
+import java.net.URI;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import com.mayora.model.Question;
+import com.mayora.service.SurveyService;
+
+@RestController
+public class SurveyController {
+
+	@Autowired
+	private SurveyService surveyService;
+	
+	@GetMapping("surveys/{surveyId}/questions")
+	public List<Question> retrieveQuestionsForSurvey(@PathVariable String surveyId){
+		return surveyService.retrieveQuestions(surveyId);
+	}
+	
+	@GetMapping("surveys/{surveyId}/questions/{questionId}")
+	public Question retrieveQuestionDetails(@PathVariable String surveyId, @PathVariable String questionId){
+		return surveyService.retrieveQuestion(surveyId, questionId);
+	}
+	
+	//@GetMapping("surveys/{surveyId}/question")
+	@RequestMapping(path="surveys/{surveyId}/question", method=RequestMethod.GET)
+	public Question retrieveQuestion(@PathVariable String surveyId, @RequestParam String id){
+		return surveyService.retrieveQuestion(surveyId, id);
+	}
+	
+	@PostMapping("surveys/{surveyId}/questions")
+	public ResponseEntity<Void> addQuestionToSurvey(@PathVariable String surveyId, @RequestBody Question newQuestion){
+		Question question = surveyService.addQuestion(surveyId, newQuestion);
+		
+		if(question == null)
+			return ResponseEntity.noContent().build();
+		
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+				.path("/{id}").buildAndExpand(question.getId()).toUri();
+		
+		return ResponseEntity.created(location).build();
+	}
+	
+}
+```
+
+## com/mayora/model/Question.java
+``` java
+package com.mayora.controller;
+
+import java.net.URI;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import com.mayora.model.Question;
+import com.mayora.service.SurveyService;
+
+@RestController
+public class SurveyController {
+
+	@Autowired
+	private SurveyService surveyService;
+	
+	@GetMapping("surveys/{surveyId}/questions")
+	public List<Question> retrieveQuestionsForSurvey(@PathVariable String surveyId){
+		return surveyService.retrieveQuestions(surveyId);
+	}
+	
+	@GetMapping("surveys/{surveyId}/questions/{questionId}")
+	public Question retrieveQuestionDetails(@PathVariable String surveyId, @PathVariable String questionId){
+		return surveyService.retrieveQuestion(surveyId, questionId);
+	}
+	
+	//@GetMapping("surveys/{surveyId}/question")
+	@RequestMapping(path="surveys/{surveyId}/question", method=RequestMethod.GET)
+	public Question retrieveQuestion(@PathVariable String surveyId, @RequestParam String id){
+		return surveyService.retrieveQuestion(surveyId, id);
+	}
+	
+	@PostMapping("surveys/{surveyId}/questions")
+	public ResponseEntity<Void> addQuestionToSurvey(@PathVariable String surveyId, @RequestBody Question newQuestion){
+		Question question = surveyService.addQuestion(surveyId, newQuestion);
+		
+		if(question == null)
+			return ResponseEntity.noContent().build();
+		
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+				.path("/{id}").buildAndExpand(question.getId()).toUri();
+		
+		return ResponseEntity.created(location).build();
+	}
+	
+}
+```
+
+## com/mayora/model/Survey.java
+``` java
+package com.mayora.model;
+
+import java.util.List;
+
+public class Survey {
+	private String id;
+	private String title;
+	private String description;
+	private List<Question> questions;
+
+	public Survey(String id, String title, String description, List<Question> questions) {
+		super();
+		this.id = id;
+		this.title = title;
+		this.description = description;
+		this.questions = questions;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public List<Question> getQuestions() {
+		return questions;
+	}
+
+	public void setQuestions(List<Question> questions) {
+		this.questions = questions;
+	}
+
+}
+```
+
+## com/mayora/service/WelcomeService.java
+``` java
+package com.mayora.service;
+
+import org.springframework.stereotype.Component;
 
 //Spring will manage this bean and create an instance of this bean
 @Component
-class WelcomeService{
+public class WelcomeService {
 	public String retrieveWelcomeMessage(){
-		return "Selamat Datang lagi";
+		return "Selamat Datang";
 	}
 }
+```
+
+## com/mayora/service/SurveyService.java
+``` java
+package com.mayora.service;
+
+import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
+import com.mayora.model.Question;
+import com.mayora.model.Survey;
+
+@Component
+public class SurveyService {
+	private static List<Survey> surveys = new ArrayList<>();
+	static{
+		Question question1 = new Question("Question1", "Who is responsible for developing the application?", "Development", Arrays.asList("Development", "Application Support", "Master Data Management", "Demmand Planner", "Technical Business Requirement"));
+		Question question2 = new Question("Question2", "Who is responsible for supporting distributor in the area?", "Application Support", Arrays.asList("Development", "Application Support", "Master Data Management", "Demmand Planner", "Technical Business Requirement"));
+		Question question3 = new Question("Question3", "Who is responsible for managing master data such as discount and price?", "Master Data Management", Arrays.asList("Development", "Application Support", "Master Data Management", "Demmand Planner", "Technical Business Requirement"));
+		Question question4 = new Question("Question4", "Who is responsible for forecasting demand of market?", "Demmand Planner", Arrays.asList("Development", "Application Support", "Master Data Management", "Demmand Planner", "Technical Business Requirement"));
+		Question question5 = new Question("Question5", "Who is responsible for testing and creating requirement of new application development?", "Technical Business Requirement", Arrays.asList("Development", "Application Support", "Master Data Management", "Demmand Planner", "Technical Business Requirement"));
+		
+		List<Question> questions = new ArrayList<>(Arrays.asList(question1, question2, question3, question4, question5));
+		
+		Survey survey = new Survey("Survey1", "System Support Job Description", "Questionary about job description of each department in System Support Division", questions);
+		surveys.add(survey);
+	}
+	
+	public List<Survey> retrieveAllSurveys(){
+		return surveys;
+	}
+	
+	public Survey retrieveSurvey(String surveyId){
+		for(Survey survey: surveys){
+			if(survey.getId().equals(surveyId)){
+				return survey;
+			}
+		}
+		return null;
+	}
+	
+	public List<Question> retrieveQuestions(String surveyId){
+		Survey survey = retrieveSurvey(surveyId);
+		
+		if(survey == null){
+			return null;
+		}
+		
+		return survey.getQuestions();
+	}
+	
+	public Question retrieveQuestion(String surveyId, String questionId){
+		Survey survey = retrieveSurvey(surveyId);
+		
+		if(survey == null){
+			return null;
+		}
+		
+		for(Question question: survey.getQuestions()){
+			if(question.getId().equals(questionId)){
+				return question;
+			}
+		}
+		
+		return null;
+	}
+	
+	private SecureRandom random = new SecureRandom();
+	
+	public Question addQuestion(String surveyId, Question question){
+		Survey survey = retrieveSurvey(surveyId);
+		
+		if(survey == null){
+			return null;
+		}
+		
+		String randomId = new BigInteger(130, random).toString(32);
+		question.setId(randomId);
+		
+		survey.getQuestions().add(question);
+		
+		return question;
+	}
+	
+	
+}
+```
+
+## com/mayora/springboot/Application.java
+``` java
+package com.mayora.springboot;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+@SpringBootApplication
+@ComponentScan("com.mayora")
+public class Application {
+	
+	public static void main(String[] args){
+		SpringApplication.run(Application.class, args);
+	}
+	
+}
+```
+
+## pom.xml
+``` xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.mayora.springboot</groupId>
+  <artifactId>sample-project</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  
+  <properties>
+  	<java.version>1.8</java.version>
+  </properties> 
+  
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>1.5.3.RELEASE</version>
+  </parent>
+  
+  <dependencies>
+    <dependency>
+	  <groupId>org.springframework.boot</groupId>
+	  <artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
+	
+	<dependency>
+		<groupId>com.fasterxml.jackson.dataformat</groupId>
+		<artifactId>jackson-dataformat-xml</artifactId>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-actuator</artifactId>
+	</dependency>
+	
+	<dependency>
+		<groupId>org.springframework.data</groupId>
+		<artifactId>spring-data-rest-hal-browser</artifactId>
+	</dependency>
+	
+	<dependency>
+	  <groupId>org.springframework.boot</groupId>
+	  <artifactId>spring-boot-devtools</artifactId>
+	  <optional>true</optional>
+	</dependency>
+  </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+  
+</project>
 ```
 
 ## Konfigurasi Eksternal application.properties
