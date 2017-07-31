@@ -3,8 +3,10 @@ REST (Representational State Transfer) dikenalkan dan didefinisikan pada tahun 2
 
 ## Prinsip REST
 - __Resources__, mengekspos struktur direktori URI yang mudah dipahami
+  - Suatu resource mempunyai URI (Uniform Resource Identifier)
+  - Suatu resrouce dapat memiliki representasi yang berbeda: XML, HTML atau JSON. Umumnya JSON digunakan untuk REST.
 - __Representations__, mengirimkan JSON atau XML untuk merepresentasikan objek data dan atribut
-- __Messages__, menggunakan method HTTP seperti GET, POST, PUT dan DELETE
+- __Messages__, menggunakan method HTTP (HyperText Transfer Protocol) seperti GET, POST, PUT dan DELETE
 - __Stateless__, tidak ada session yang disimpan di server, session disimpan oleh client.
 
 ## HTTP methods
@@ -31,3 +33,8 @@ Kode | Deskripsi
 
 ## Media Type
 __Accept__ dan __Content-Type__ pada HTTP header digunakan untuk menggambarkan konten yang sedang dikirimkan atau direquest didalam  HTTP request. Klien harus mengatur Accept menjadi "application/json", jika klien merequest respon dalam bentuk JSON. sebaliknya, ketika mengirimkan data pada saat melakukan request, klien harus mengatur Content-Type menjadi "application/xml" jika klien mengirimkan data dalam bentuk XML.
+
+## Dokumentasi Service Definition
+Tools yang digunakan untuk dokumentasi service definition adalah
+- WADL (Web Application Definition Language)
+- Swagger
