@@ -1,0 +1,16 @@
+# Membuat Projek Spring Boot dengan Spring Initializr
+- Akses http://start.spring.io (Spring Initializr)
+- Generate a "Maven Project" with "Java" and Spring Boot "1.5.6" (Stable Release)
+- Untuk Project Metadata,
+  - Isi Group, misal: com.training.web
+  - Isi Artifact, misal: projek-pertama
+- Pilih Dependencies
+  - Web, digunakan untuk membuat web aplikasi
+  - Devtools, digunakan untuk membuat proses pengembangan aplikasi lebih mudah, dikarenakan aplikasi akan reboot secara otomatis jika ada perubahan file
+  - H2, digunakan untuk menggunakan in memory database
+  - Security, digunakan untuk menambahkan spring security ke aplikasi
+  - JPA, digunakan untuk menghubungkan aplikasi ke database
+- Klik Generate Project
+- Ekstrak file .zip dari projek
+- Import projek
+  - File > Import > Existing Maven Projects
