@@ -239,4 +239,162 @@ Untuk mengubah output format tanggal JSON, pada application.properties tambahkan
 spring.jackson.serialization.write-dates-as-timestamps=false
 ```
 
+//inspect Google Chrome untuk melihat Header dan Response
+
 ## Implementasi method POST untuk membuat data User
+``` java
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class UserController {
+	
+	@Autowired
+	private UserDaoService service;
+	
+	@GetMapping(path = "/users")
+	public List<User> getAllUsers(){
+		return service.findAll();
+	}
+	
+	@GetMapping(path = "/users/{id}")
+	public User getUser(@PathVariable int id){
+		return service.findOne(id);
+	}
+	
+	@PostMapping("/users")
+	public void createUser(@RequestBody User user){
+		User savedUser = service.save(user);
+	}
+	
+}
+```
+
+Untuk menguji web service dengan method HTTP POST maka perlu menggunakan tools yakni Postman, yang dapat didownload dari http://www.getpostman.com. Postman merupakan rest client yang dapat digunakan untuk menguji aplikasi web service.
+
+Pada Postman,
+- Pilih Method HTTP POST
+- Masukan URL http://localhost:8080/users
+- Masukan Request Body, pada Tab Body, pilih raw dan JSON (application/json)
+``` json
+{
+	"name": "New User",
+	"birthDate": "2017-08-04T08:10:35.979+0000"
+}
+```
+- Klik Send
+
+## Implementasi method POST untuk membuat data User dan mengganti kode status HTTP
+``` java
+package com.mayora.boot;
+
+import java.net.URI;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+@RestController
+public class UserController {
+	
+	@Autowired
+	private UserDaoService service;
+	
+	@GetMapping(path = "/users")
+	public List<User> getAllUsers(){
+		return service.findAll();
+	}
+	
+	@GetMapping(path = "/users/{id}")
+	public User getUser(@PathVariable int id){
+		return service.findOne(id);
+	}
+	
+	@PostMapping("/users")
+	public ResponseEntity<Object> createUser(@RequestBody User user){
+		User savedUser = service.save(user);
+		
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+			.path("/{id}").buildAndExpand(savedUser.getId()).toUri();
+		
+		return ResponseEntity.created(location).build();
+	}
+	
+}
+```
+
+## Implementasi Exception Handling jika resource tidak ditemukan
+Buat kelas UserNotFoundException.java
+``` java
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class UserNotFoundException extends RuntimeException {
+
+	public UserNotFoundException(String message) {
+		super(message);
+	}
+	
+}
+```
+
+Ubah method getUser
+``` java
+import java.net.URI;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+@RestController
+public class UserController {
+	
+	@Autowired
+	private UserDaoService service;
+	
+	@GetMapping(path = "/users")
+	public List<User> getAllUsers(){
+		return service.findAll();
+	}
+	
+	@GetMapping(path = "/users/{id}")
+	public User getUser(@PathVariable int id){
+		User user = service.findOne(id);
+		
+		if(user == null)
+			throw new UserNotFoundException("id-" + id);
+		
+		return user;
+	}
+	
+	@PostMapping("/users")
+	public ResponseEntity<Object> createUser(@RequestBody User user){
+		User savedUser = service.save(user);
+		
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+			.path("/{id}").buildAndExpand(savedUser.getId()).toUri();
+		
+		return ResponseEntity.created(location).build();
+	}
+	
+}
+
