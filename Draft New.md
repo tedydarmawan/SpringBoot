@@ -758,6 +758,86 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 }
 ```
 
+## Implementasi HATEOS untuk RESTful Service
+HATEOAS(Hypermedia As The Engine Of Application State)
+
+Tambahkan dependency hateos
+``` xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-hateoas</artifactId>
+</dependency>
+```
+
+Pada kelas UserController.java, ubah body method getUser()
+``` java
+import java.net.URI;
+import java.util.List;
+import java.util.ResourceBundle.Control;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+@RestController
+public class UserController {
+	
+	@Autowired
+	private UserDaoService service;
+	
+	@GetMapping(path = "/users")
+	public List<User> getAllUsers(){
+		return service.findAll();
+	}
+	
+	@GetMapping(path = "/users/{id}")
+	public Resource<User> getUser(@PathVariable int id){
+		User user = service.findOne(id);
+		
+		if(user == null)
+			throw new UserNotFoundException("id-" + id);
+		
+		Resource<User> resource = new Resource<User>(user);
+		
+		ControllerLinkBuilder linkTo = linkTo(methodOn(this.getClass()).getAllUsers());
+		resource.add(linkTo.withRel("all-users"));
+		
+		return resource;
+	}
+	
+	@PostMapping("/users")
+	public ResponseEntity<Object> createUser(@Valid @RequestBody User user){
+		User savedUser = service.save(user);
+		
+		URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+			.path("/{id}").buildAndExpand(savedUser.getId()).toUri();
+		
+		return ResponseEntity.created(location).build();
+	}
+	
+	@DeleteMapping(path = "/users/{id}")
+	public void deleteUser(@PathVariable int id){
+		User user = service.deleteById(id);
+		
+		if(user == null)
+			throw new UserNotFoundException("id-" + id);
+	}
+	
+}
+```
+
 ## Menambahkan Dokumentasi Pada API
 1. Tambahkan dependency springfox-swagger2
 ``` xml
@@ -895,6 +975,6 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", birthDate=" + birthDate + "]";
 	}
-
+ 
 }
 ```
