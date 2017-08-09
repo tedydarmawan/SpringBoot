@@ -838,6 +838,124 @@ public class UserController {
 }
 ```
 
+## Internasionalisasi RESTful Service
+Pada folder src/main/resources buat file messages.properties
+``` properties
+hello.greeting=Hello Bonjour
+```
+
+Pada folder src/main/resources buat file messages_fr.properties
+``` properties
+hello.greeting=Bonjour
+```
+
+Pada kelas Application.java, tambahkan method localResolver() dan messageSource()
+
+``` java
+import java.util.Locale;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+
+
+@SpringBootApplication
+public class Application {
+	
+	public static void main(String[] args){
+		SpringApplication.run(Application.class, args);
+	}
+	
+	@Bean
+	public LocaleResolver localeResolver(){
+		SessionLocaleResolver localeResolver = new SessionLocaleResolver();
+		localeResolver.setDefaultLocale(Locale.US);
+		return localeResolver;
+	}
+	
+	@Bean
+	public ResourceBundleMessageSource messageSource(){
+		ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
+		messageSource.setBasename("messages");
+		return messageSource;
+	}
+	
+}
+```
+
+Pada Kelas HelloWorldController.java tambahkan method getHelloInternationalized()
+``` java
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class HelloWorldController {
+	
+	@Autowired
+	private MessageSource messageSource;
+	
+	@GetMapping(path = "/hello-world")
+	public String getHello(){
+		return "Hello World";
+	}
+	
+	@GetMapping(path = "/hello-world-bean")
+	public HelloWorldBean getHelloBean(){
+		return new HelloWorldBean("Hello World");
+	}
+	
+	@GetMapping(path = "/hello-world/{name}")
+	public HelloWorldBean getHelloPathVariable(@PathVariable String name){
+		return new HelloWorldBean(String.format("Hello World, %s", name));
+	}
+	
+	@GetMapping(path = "/hello-world-internationalized")
+	public String getHelloInternationalized(@RequestHeader(name="Accept-Language", required=false) Locale locale){
+		return messageSource.getMessage("hello.greeting", null, locale);
+	}	
+}
+```
+
+## Implementasi Support XML - Negosiasi Konten
+Tambahkan dependency jackson-dataformat-xml pada pom.xml
+``` xml
+<dependency>
+    <groupId>com.fasterxml.jackson.dataformat</groupId>
+    <artifactId>jackson-dataformat-xml</artifactId>
+    <version>2.9.0</version>
+</dependency>
+```
+
+Accept = application/xml
+
+
+## Best Practive - RESTful Service
+- Consumer First
+- Gunakan Request Method HTTP yang sesuai
+	- GET
+	- POST
+	- PUT
+	- DELETE
+- Gunakan Response Status yang sesuai
+	- 200 Success
+	- 404 Reource Not Found
+	- 400 Bad Request
+	- 201 Created
+	- 401 Unauthorized
+	- 500 Server Error
+- No Secure Info in URI
+- Use Plurals
+- Use Nouns For Resources
+
 ## Menambahkan Dokumentasi Pada API
 1. Tambahkan dependency springfox-swagger2
 ``` xml
@@ -978,3 +1096,23 @@ public class User {
  
 }
 ```
+
+## Monitoring API with Spring Actuator
+Tambahkan dependency spring-boot-starter-actuator
+
+``` xml
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-actuator</artifactId>
+</dependency>
+```
+
+Tambahkan dependency spring-data-rest-hal-browser
+``` xml
+<dependency>
+	<groupId>org.springframework.data</groupId>
+	<artifactId>spring-data-rest-hal-browser</artifactId>
+</dependency>
+```
+
+Akses actuator < 2.0 http://localhost:8080/actuator atau >= 2.0 http://localhost:8080/application
