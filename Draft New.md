@@ -242,6 +242,7 @@ spring.jackson.serialization.write-dates-as-timestamps=false
 //inspect Google Chrome untuk melihat Header dan Response
 
 ## Implementasi method POST untuk membuat data User
+Pada kelas UserController.java, tambahkan method POST createUser()
 ``` java
 import java.util.List;
 
@@ -291,6 +292,7 @@ Pada Postman,
 - Klik Send
 
 ## Implementasi method POST untuk membuat data User dan mengganti kode status HTTP
+Pada kelas UserController.java, ubah body method createUser()
 ``` java
 import java.net.URI;
 import java.util.List;
@@ -349,7 +351,7 @@ public class UserNotFoundException extends RuntimeException {
 }
 ```
 
-Ubah method getUser
+Pada kelas UserController.java, ubah body method getUser()
 ``` java
 import java.net.URI;
 import java.util.List;
@@ -477,7 +479,7 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 ```
 
 ## Implementasi Method Delete untuk menghapus data user
-Kelas UserDaoService.java
+Pada kelas UserDaoService.java, tambahkan method deleteById()
 ``` java
 import java.util.ArrayList;
 import java.util.Date;
@@ -535,7 +537,7 @@ public class UserDaoService {
 }
 ```
 
-Kelas UserController.java
+Pada kelas UserController.java, tambahkan method DELETE deleteUser()
 ``` java
 import java.net.URI;
 import java.util.List;
@@ -593,7 +595,7 @@ public class UserController {
 ```
 
 ## Implementasi Validasi untuk RESTful Service
-Kelas UserController.java
+Pada kelas UserController.java, tambahkan anotasi @Valid pada parameter method createUser()
 ``` java
 import java.net.URI;
 import java.util.List;
@@ -652,7 +654,7 @@ public class UserController {
 }
 ```
 
-Kelas User.java
+Pada kelas User.java, tambahkan anotasi validator @Size dan @Past
 ``` java
 import java.util.Date;
 
@@ -662,7 +664,7 @@ import javax.validation.constraints.Size;
 public class User {
 	private Integer id;
 	
-	@Size(min=2)
+	@Size(min=2, message="Name should have at least 2 characters")
 	private String name;
 	
 	@Past
@@ -710,7 +712,51 @@ public class User {
 }
 ```
 
-(Lanjut)
+Pada kelas CustomizedResponseEntityExceptionHandler.java, override method handleMethodArgumentNotValid()
+``` java
+import java.util.Date;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
+@ControllerAdvice
+@RestController
+public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExceptionHandler{
+	
+	@ExceptionHandler(Exception.class)
+	public final ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request){
+		ExceptionResponse exceptionResponse = 
+				new ExceptionResponse(new Date(), ex.getMessage(), 
+						request.getDescription(false));
+		return new ResponseEntity(exceptionResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+	
+	@ExceptionHandler(UserNotFoundException.class)
+	public final ResponseEntity<Object> handleUserNotFoundExceptions(UserNotFoundException ex, WebRequest request){
+		ExceptionResponse exceptionResponse = 
+				new ExceptionResponse(new Date(), ex.getMessage(), 
+						request.getDescription(false));
+		return new ResponseEntity(exceptionResponse, HttpStatus.NOT_FOUND);
+	}
+	
+	@Override
+	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		ExceptionResponse exceptionResponse = 
+				new ExceptionResponse(new Date(), "Validation failed", 
+						ex.getBindingResult().toString());
+		return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+}
+```
 
 ## Menambahkan Dokumentasi Pada API
 1. Tambahkan dependency springfox-swagger2
